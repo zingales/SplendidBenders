@@ -136,7 +136,7 @@ def main(outputFolderPath, resourceCardsCSV, vipCardsCSV):
     logging.info("Generating ResourceCard PNGs")
     for resourcePath in resourceCardSvgs:
         outputPath = Path(str(resourcePath).replace("SVGs", 'PNGs').replace('.svg', '.png'))
-        svg_to_png(outputPath, outputPath)
+        svg_to_png(resourcePath, outputPath)
 
 
 if __name__ == "__main__":
