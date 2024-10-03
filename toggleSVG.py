@@ -24,11 +24,11 @@ class Toggler:
         # Iterate over all <g> elements
         for group in root.findall('.//svg:g', namespaces):
             if group.get('id') in self.onIds:
-                updatedStyle = group.get('style').replace('display:inline;', '').replace('display:none;', '').replace('display:none', '').replace('display:inline', '')
+                updatedStyle = group.get('style', '').replace('display:inline;', '').replace('display:none;', '').replace('display:none', '').replace('display:inline', '')
                 group.set('style', updatedStyle)
                 group.set('display', 'inline')
             elif group.get('id') in self.offIds:
-                updatedStyle = group.get('style').replace('display:inline;', '').replace('display:none;', '').replace('display:none', '').replace('display:inline', '')
+                updatedStyle = group.get('style', '').replace('display:inline;', '').replace('display:none;', '').replace('display:none', '').replace('display:inline', '')
                 group.set('style', updatedStyle)
                 group.set('display', 'none')
    
