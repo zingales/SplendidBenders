@@ -1,15 +1,27 @@
 import subprocess
+import platform
+import logging
+
 
 from ResourceCardGenerator import generateResourceCad, ResourceType
 
-__INKSCAPE_PATH = '/Applications/Inkscape.app/Contents/MacOS/inkscape'
+INKSCAPE_PATH_MACOS = '/Applications/Inkscape.app/Contents/MacOS/inkscape'
+
+INKSCAPE_PATH_WINDOWS = "C:\\Program Files\\Inkscape\\bin\\inkscape.exe"
+
+
+
+os_name = platform.system()
+if os_name == "Windows":
+    INKSCAPE_PATH = INKSCAPE_PATH_WINDOWS
+elif os_name == "Darwin":
+    INKSCAPE_PATH = INKSCAPE_PATH_MACOS
+else:
+    logging.error("Unsure what the default INKSCAPE Path is please set inkscapeConversion.INKSCAPE_PATH manually")
 
 def svg_to_png(svg_file, output_file):
-    subprocess.run([__INKSCAPE_PATH, svg_file, "--export-filename", output_file])
+    subprocess.run([INKSCAPE_PATH, svg_file, "--export-filename", output_file])
     print(f'Finished Converting {svg_file} to {output_file}')
-
-
-
 
 if __name__ == "__main__":
     oneTrayPath = 'output/OneTray.svg'
