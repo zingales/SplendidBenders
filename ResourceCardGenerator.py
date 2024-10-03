@@ -1,7 +1,6 @@
 from toggleSVG import Toggler, RequirementsSlot, ResourceType
 
 class OddTray:
-    OneTrayId = 'g1763'
     TrayId = 'g1763'
 
             # RequirementsSlot(id, air, lotus, water, earth, fire)
@@ -160,11 +159,6 @@ class OddTray:
         return {7:self.Seven, 6:self.Six, 5:self.Five, 4:self.Four, 3:self.Three}
 
     def addToToggler(self, toggler):
-        print(f'Slot A is {self.SlotA.onType}')
-        print(f'Slot B is {self.SlotB.onType}')
-        print(f'Slot C is {self.SlotC.onType}')
-        print(f'Nums on {self.numsId}')
-
         otherNums = self.allNums()
         otherNums.remove(self.numsId)
         toggler.offIds.update(otherNums)
@@ -230,12 +224,6 @@ class FourTray:
     
 
     def addToToggler(self, toggler):
-        print(f'Slot A is {self.SlotA.onType}')
-        print(f'Slot B is {self.SlotB.onType}')
-        print(f'Slot C is {self.SlotC.onType}')
-        print(f'Slot D is {self.SlotD.onType}')
-        print(f'Nums on {self.numsId}')
-
         otherNums = self.allNums()
         otherNums.remove(self.numsId)
         toggler.offIds.update(otherNums)
@@ -297,13 +285,10 @@ class TwoTray:
 
 
     def addToToggler(self, toggler):
-        print(f'Slot A is {self.SlotA.onType}')
-        print(f'Slot B is {self.SlotB.onType}')
         otherNums = self.allNums()
         otherNums.remove(self.numsId)
         toggler.offIds.update(otherNums)
         toggler.onIds.update([self.TrayId, self.numsId])
-        print(f'Nums on {self.numsId}')
         self.SlotA.addToToggler(toggler)
         self.SlotB.addToToggler(toggler)
 
@@ -383,7 +368,7 @@ class Border:
 
 
 def allTrayIds():
-    return {TwoTray.TrayId, FourTray.TrayId, OddTray.OneTrayId}
+    return {TwoTray.TrayId, FourTray.TrayId, OddTray.TrayId}
 
 def generateResourceCad(outputFile, requirements, victorypoints, type, image):
     toggler = Toggler()
@@ -410,10 +395,6 @@ def generateResourceCad(outputFile, requirements, victorypoints, type, image):
 
     vp = VictoryPoints(victorypoints)
     vp.addToToggler(toggler)
-    
-
-    print(f'On ids {toggler.onIds}')
-    print(f'Off ids {toggler.offIds}')
 
     input_svg = 'AllCards_v3.svg'
     toggler.execute(input_svg, outputFile)
