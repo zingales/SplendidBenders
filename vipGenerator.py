@@ -54,6 +54,7 @@ def generateVIPImage(outputFile, types):
     print(f'Generated file {outputFile}')
 
 
-output = 'output/number1.svg'
-generateVIPImage(output, types = [ResourceType.Fire, ResourceType.Lotus])
+if __name__ == "__main__":
+    output = 'output/number1.svg'
+    generateVIPImage(output, types = [ResourceType.Fire, ResourceType.Lotus])
 
