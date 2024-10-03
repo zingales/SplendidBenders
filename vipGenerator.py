@@ -45,12 +45,11 @@ def set_vip_requirements(types, toggler):
     
 
 
-def generateVIPImage(outputFile, types):
+def generateVIPImage(outputFile, types, input_svg):
     toggler = Toggler()
 
     set_vip_requirements(types, toggler)
 
-    input_svg = 'VIP_Front.svg'
     toggler.execute(input_svg, outputFile)
     print(f'Generated file {outputFile}')
 

@@ -387,7 +387,7 @@ class Border:
 def allTrayIds():
     return {TwoTray.TrayId, FourTray.TrayId, OddTray.TrayId}
 
-def generateResourceCad(outputFile, requirements, victorypoints, type, image):
+def generateResourceCad(outputFile, requirements, victorypoints, type, image, input_svg):
     toggler = Toggler()
     
     
@@ -413,7 +413,7 @@ def generateResourceCad(outputFile, requirements, victorypoints, type, image):
     vp = VictoryPoints(victorypoints)
     vp.addToToggler(toggler)
 
-    input_svg = 'AllCards_v3.svg'
+    
     toggler.execute(input_svg, outputFile)
     print(f'Generated file {outputFile}')
 

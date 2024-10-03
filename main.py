@@ -32,9 +32,9 @@ class VIPCard:
         self.quote = quote
         self.originRow = originRow
 
-    def generateSVG(self, outputFolder):
+    def generateSVG(self, outputFolder, input_svg):
         outputFile = outputFolder/f'VIP/VIP_{self.originRow}.svg'
-        generateVIPImage(outputFile, self.requirements)
+        generateVIPImage(outputFile, self.requirements, input_svg)
         return outputFile
 
 class ResourceCard:
@@ -47,9 +47,9 @@ class ResourceCard:
         self.image = image
         self.originRow = originRow
 
-    def generateSVG(self, outputFolder):
+    def generateSVG(self, outputFolder, input_svg):
         outputFile = outputFolder/f'Level{self.level}/{self.produces}_{self.originRow}.svg'
-        generateResourceCad(outputFile, self.requirements, self.victoryPoints, self.produces, self.image)
+        generateResourceCad(outputFile, self.requirements, self.victoryPoints, self.produces, self.image, input_svg)
         return outputFile
 
 def loadVIPCardsFromCsv(csvFile) -> tuple[list[VIPCard], list[Exception]]:
@@ -99,7 +99,7 @@ def loadResourceCardsFromCsv(csvFile) -> tuple[list[ResourceCard], list[Exceptio
         return cards, errors
 
 
-def main(outputFolderPath, resourceCardsCSV, vipCardsCSV):
+def main(outputFolderPath, resourceCardsCSV, vipCardsCSV, vipTemplateSvg, resourceCardTemplateSvg):
 
     svgsPath = outputFolderPath / "SVGs"
 
@@ -120,11 +120,11 @@ def main(outputFolderPath, resourceCardsCSV, vipCardsCSV):
 
     resourceCardSvgs = list()
     for card in resourceCards:
-        resourceCardSvgs.append(card.generateSVG(svgsPath))
+        resourceCardSvgs.append(card.generateSVG(svgsPath, resourceCardTemplateSvg))
 
     vipCardSvgs = list()
     for card in vipCards:
-        vipCardSvgs.append(card.generateSVG(svgsPath))
+        vipCardSvgs.append(card.generateSVG(svgsPath, vipTemplateSvg))
     logging.info("Done Generating SVGs")
 
 
@@ -143,9 +143,14 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     outputFolderPath = Path("output")
 
-    assetsPath = Path("assets")
+    # assetsPath = Path("assets")
+    assetsPath = Path(r"D:\Dropbox\Eppe's Stuff\Avatar Splenor Assets")
+
 
     resourceCardsCSV = assetsPath / "resourceCards.csv"
     vipCardsCSV = assetsPath / "VIPCards.csv"
 
-    main(outputFolderPath, resourceCardsCSV, vipCardsCSV)
+    vipTemplateSvg = assetsPath/ "Inkscape_SVG" / "VIP_Front.svg"
+    resourceCardTemplateSvg = assetsPath/ "Inkscape_SVG" / "AllCards_v3.svg"
+
+    main(outputFolderPath, resourceCardsCSV, vipCardsCSV, vipTemplateSvg, resourceCardTemplateSvg)
