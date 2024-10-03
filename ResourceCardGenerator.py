@@ -10,12 +10,125 @@ class OddTray:
     SlotC = RequirementsSlot('g1749', 'g82', 'g80', 'g78', 'g76', 'g1745')
     
 
+    def threeNumTree(self):
+        return {
+            1:{
+                1:{
+                    2:self.OneOneTwo,
+                    3:self.OneOneThree,
+                }, 2: {
+                    2:self.OneTwoTwo
+                }, 3: {
+                    1:self.OneThreeOne,
+                }, 4: {
+                    2:self.OneFourTwo
+                }
+            }, 
+            2:{
+                1:{
+                    2:self.TwoOneTwo,
+                    4:self.TwoOneFour
+                }, 
+                2:{
+                    1:self.TwoTwoOne,
+                    3:self.TwoTwoThree
+                },
+                3: {
+                    2:self.TwoThreeTwo,
+                    3:self.TwoThreeThree
+                },
+                
+            }, 
+            3:{
+                1: {
+                    1:self.ThreeOneOne,
+                },
+                2: {
+                    2:self.ThreeTwoTwo,
+                    3:self.ThreeTwoThree,
+                },
+                3: {
+                    2:self.ThreeThreeTwo,
+                    6:self.ThreeThreeSix
+                },
+                6: {
+                    3:self.ThreeSixThree,
+                }
+            }, 
+            6: {
+                2: {
+                    1:self.SixTwoOne,
+                },
+                3: {
+                    3:self.SixThreeThree
+                }
+            }
+        }
+
+
+    OneOneTwo = 'g294'
+
+    OneTwoTwo = 'g317'
+    TwoOneTwo = 'g266'
+    TwoTwoOne = 'g280'
+
+    OneOneThree = 'g305'
+    OneThreeOne = 'g299'
+    ThreeOneOne = 'g254'
+
+    TwoTwoThree = 'g270'
+    TwoThreeTwo = 'g274'
+    ThreeTwoTwo = 'g248'
+
+    TwoThreeThree = 'g227'
+    ThreeTwoThree = 'g241'
+    ThreeThreeTwo = 'g236'
+
+    OneFourTwo = 'g259'
+    TwoOneFour = 'g287'
+
+    SixTwoOne = 'g210'
+
+    ThreeThreeSix = 'g216'
+    ThreeSixThree = 'g221'
+    SixThreeThree = 'g212'
+
     Seven = 'g336'
     Six = 'g335'
     Five = 'g334'
     Four = 'g333'
     Three = 'g331'
 
+
+    def allNums(self):
+        return {
+            self.OneOneTwo,
+            self.OneTwoTwo,
+            self.TwoOneTwo,
+            self.TwoTwoOne,
+            self.OneOneThree,
+            self.OneThreeOne,
+            self.ThreeOneOne,
+            self.TwoTwoThree,
+            self.TwoThreeTwo,
+            self.ThreeTwoTwo,
+            self.TwoThreeThree,
+            self.ThreeTwoThree,
+            self.ThreeThreeTwo,
+            self.OneFourTwo,
+            self.TwoOneFour,
+            self.SixTwoOne,
+            self.ThreeThreeSix,
+            self.ThreeSixThree,
+            self.SixThreeThree,
+            self.Seven, 
+            self.Six, 
+            self.Five, 
+            self.Four,
+            self.Three
+            }
+
+    
     def __init__(self, requirements) -> None:
         
         if len(requirements) == 1:
@@ -37,18 +150,11 @@ class OddTray:
                     slot.setType(aType)
                     values.append(requirements[aType])
                     
-            self.numsId = self.threeNumsTree()[values[0]][values[1]][values[2]]
+            self.numsId = self.threeNumTree()[values[0]][values[1]][values[2]]
         else:
             raise ValueError("Odd Tray requirements can only be of length 1 or 3")    
     
-    def allNums(self):
-        return {
-            self.Seven, 
-            self.Six, 
-            self.Five, 
-            self.Four,
-            self.Three
-            }
+    
 
     def oneNumTree(self):
         return {7:self.Seven, 6:self.Six, 5:self.Five, 4:self.Four, 3:self.Three}
@@ -314,7 +420,8 @@ def generateResourceCad(outputFile, requirements, victorypoints, type, image):
     print(f'Generated file {outputFile}')
 
 
-requirements = {ResourceType.Air:7}
+# requirements = {ResourceType.Air:7}
 # requirements = {ResourceType.Air:7, ResourceType.Water:3}
+requirements = {ResourceType.Air:1, ResourceType.Water:4, ResourceType.Earth:2}
 # requirements = {ResourceType.Water:5, ResourceType.Lotus:3, ResourceType.Earth:3, ResourceType.Air:3}
-generateResourceCad('output/OneTray.svg', requirements, 3, ResourceType.Fire, image='')
+generateResourceCad('output/ThreeTray.svg', requirements, 4, ResourceType.Fire, image='')
