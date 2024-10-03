@@ -420,8 +420,3 @@ def generateResourceCad(outputFile, requirements, victorypoints, type, image):
     print(f'Generated file {outputFile}')
 
 
-# requirements = {ResourceType.Air:7}
-# requirements = {ResourceType.Air:7, ResourceType.Water:3}
-requirements = {ResourceType.Air:1, ResourceType.Water:4, ResourceType.Earth:2}
-# requirements = {ResourceType.Water:5, ResourceType.Lotus:3, ResourceType.Earth:3, ResourceType.Air:3}
-generateResourceCad('output/ThreeTray.svg', requirements, 4, ResourceType.Fire, image='')
