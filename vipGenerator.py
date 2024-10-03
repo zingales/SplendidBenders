@@ -26,14 +26,15 @@ class VIPCounts:
 
 
 def set_vip_requirements(types, toggler):
-    if len(types) == 3:
-        slotA.setType(types[0])
-        slotB.setType(types[1])
-        slotC.setType(types[2])
+    typeKeys = list(types.keys())
+    if len(typeKeys) == 3:
+        slotA.setType(typeKeys[0])
+        slotB.setType(typeKeys[1])
+        slotC.setType(typeKeys[2])
         count = VIPCounts(isThreebByThree=True)
     else:
-        slotA.setType(types[0])
-        slotB.setType(types[1])
+        slotA.setType(typeKeys[0])
+        slotB.setType(typeKeys[1])
         slotC.turnOff()
         count = VIPCounts(isThreebByThree=False)
     

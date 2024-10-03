@@ -3,8 +3,10 @@ from pathlib import Path
 from collections import defaultdict
 import logging
 
-from ResourceCardGenerator import generateResourceCad, ResourceType
+from toggleSVG import ResourceType
+from ResourceCardGenerator import generateResourceCad
 from vipGenerator import generateVIPImage
+from inkscapeConversion import svg_to_png
 
 conversionColorToResourceType = {
     'Black': ResourceType.Air,
@@ -24,25 +26,31 @@ class BadCSVRow(ValueError):
 
 class VIPCard:
 
-    def __init__(self, requires, victoryPoints, quote) -> None:
+    def __init__(self, requires, victoryPoints, quote, originRow) -> None:
         self.requirements = requires
         self.victoryPoints = victoryPoints
         self.quote = quote
+        self.originRow = originRow
 
-    def generateSVG(self, outputFile):
+    def generateSVG(self, outputFolder):
+        outputFile = outputFolder/f'VIP/VIP_{self.originRow}.svg'
         generateVIPImage(outputFile, self.requirements)
+        return outputFile
 
 class ResourceCard:
 
-    def __init__(self,produces,requires, level, victoryPoints,image) -> None:
+    def __init__(self,produces,requires, level, victoryPoints,image, originRow) -> None:
         self.produces = produces
         self.requirements = requires
         self.level = level
         self.victoryPoints= victoryPoints
         self.image = image
+        self.originRow = originRow
 
-    def generateSVG(self, outputfile):
-        generateResourceCad(outputfile, self.requirements, self.victorypoints, self.type, self.image)
+    def generateSVG(self, outputFolder):
+        outputFile = outputFolder/f'Level{self.level}/{self.produces}_{self.originRow}.svg'
+        generateResourceCad(outputFile, self.requirements, self.victoryPoints, self.produces, self.image)
+        return outputFile
 
 def loadVIPCardsFromCsv(csvFile) -> tuple[list[VIPCard], list[Exception]]:
     with open(csvFile, newline='\n') as csvfile:
@@ -57,7 +65,7 @@ def loadVIPCardsFromCsv(csvFile) -> tuple[list[VIPCard], list[Exception]]:
                 for ogColor, resourceType in conversionColorToResourceType.items():
                     if row[ogColor] != '':
                         requirements[resourceType] = int(row[ogColor])
-                cards.append(VIPCard(requires=requirements, victoryPoints=victoryPoints, quote=""))
+                cards.append(VIPCard(requires=requirements, victoryPoints=victoryPoints, quote="", originRow=rowCount))
             except (KeyError,ValueError) as e:
                 customError = BadCSVRow(rowCount, f"{row}", e)
                 errors.append(customError)
@@ -81,7 +89,7 @@ def loadResourceCardsFromCsv(csvFile) -> tuple[list[ResourceCard], list[Exceptio
                 for ogColor, resourceType in conversionColorToResourceType.items():
                     if row[ogColor] != '':
                         requirements[resourceType] = int(row[ogColor])
-                cards.append(ResourceCard(produces=generates, requires=requirements,level=cardLevel,victoryPoints=victoryPoints, image=''))
+                cards.append(ResourceCard(produces=generates, requires=requirements,level=cardLevel,victoryPoints=victoryPoints, image='', originRow=rowCount))
             except (KeyError,ValueError) as e:
                 customError = BadCSVRow(rowCount, f"{row}", e)
                 errors.append(customError)
@@ -93,7 +101,7 @@ def loadResourceCardsFromCsv(csvFile) -> tuple[list[ResourceCard], list[Exceptio
 
 def main(outputFolderPath, resourceCardsCSV, vipCardsCSV):
 
-    outputImageFolderPath = outputFolderPath / "images"
+    svgsPath = outputFolderPath / "SVGs"
 
 
     # Generate Resource Pdf
@@ -109,6 +117,27 @@ def main(outputFolderPath, resourceCardsCSV, vipCardsCSV):
     logging.info(f"number of bad rows {len(errors)}")
     if len(errors) > 0:
         logging.error(f"{errors}")
+
+    resourceCardSvgs = list()
+    for card in resourceCards:
+        resourceCardSvgs.append(card.generateSVG(svgsPath))
+
+    vipCardSvgs = list()
+    for card in vipCards:
+        vipCardSvgs.append(card.generateSVG(svgsPath))
+    logging.info("Done Generating SVGs")
+
+
+    logging.info("Generating VIP PNGs")
+    for vipPath in vipCardSvgs:
+        outputPath = Path(str(vipPath).replace("SVGs", 'PNGs').replace('.svg', '.png'))
+        svg_to_png(vipPath, outputPath)
+
+    logging.info("Generating ResourceCard PNGs")
+    for resourcePath in resourceCardSvgs:
+        outputPath = Path(str(resourcePath).replace("SVGs", 'PNGs').replace('.svg', '.png'))
+        svg_to_png(outputPath, outputPath)
+
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

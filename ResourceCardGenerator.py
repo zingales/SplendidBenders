@@ -4,9 +4,9 @@ class OddTray:
     TrayId = 'g1763'
 
             # RequirementsSlot(id, air, lotus, water, earth, fire)
-    SlotA = RequirementsSlot('g1762', 'g66', 'g64', 'g62', 'g60', 'g1757')
-    SlotB = RequirementsSlot('g1755', 'g74', 'g72', 'g70', 'g68', 'g1751')
-    SlotC = RequirementsSlot('g1749', 'g82', 'g80', 'g78', 'g76', 'g1745')
+    SLOT_A = RequirementsSlot('g1762', 'g66', 'g64', 'g62', 'g60', 'g1757')
+    SLOT_B = RequirementsSlot('g1755', 'g74', 'g72', 'g70', 'g68', 'g1751')
+    SLOT_C = RequirementsSlot('g1749', 'g82', 'g80', 'g78', 'g76', 'g1745')
     
 
     def threeNumTree(self):
@@ -54,6 +54,11 @@ class OddTray:
                     3:self.ThreeSixThree,
                 }
             }, 
+            4: {
+                2: {
+                    1:self.FourTwoOne
+                }
+            },
             6: {
                 2: {
                     1:self.SixTwoOne,
@@ -85,6 +90,7 @@ class OddTray:
 
     OneFourTwo = 'g259'
     TwoOneFour = 'g287'
+    FourTwoOne = 'g8'
 
     SixTwoOne = 'g210'
 
@@ -116,6 +122,7 @@ class OddTray:
             self.ThreeThreeTwo,
             self.OneFourTwo,
             self.TwoOneFour,
+            self.FourTwoOne,
             self.SixTwoOne,
             self.ThreeThreeSix,
             self.ThreeSixThree,
@@ -130,19 +137,23 @@ class OddTray:
     
     def __init__(self, requirements) -> None:
         
+        self.slotA = self.SLOT_A.clone()
+        self.slotB = self.SLOT_B.clone()
+        self.slotC = self.SLOT_C.clone()
+
         if len(requirements) == 1:
             
-            self.SlotC.turnOff()
-            self.SlotA.turnOff()
+            self.slotC.turnOff()
+            self.slotA.turnOff()
             aType = list(requirements.keys())[0]
-            self.SlotB.setType(aType)
+            self.slotB.setType(aType)
             self.numsId = self.oneNumTree()[requirements[aType]]
 
 
 
         elif len(requirements) == 3:
             values = list()
-            slotsToAssign = [self.SlotC, self.SlotB, self.SlotA]
+            slotsToAssign = [self.slotC, self.slotB, self.slotA]
             for aType in ResourceType:
                 if aType in requirements:
                     slot = slotsToAssign.pop()
@@ -163,18 +174,18 @@ class OddTray:
         otherNums.remove(self.numsId)
         toggler.offIds.update(otherNums)
         toggler.onIds.update([self.TrayId, self.numsId])
-        self.SlotA.addToToggler(toggler)
-        self.SlotB.addToToggler(toggler)
-        self.SlotC.addToToggler(toggler)
+        self.slotA.addToToggler(toggler)
+        self.slotB.addToToggler(toggler)
+        self.slotC.addToToggler(toggler)
 
 class FourTray:
     TrayId = 'g170'
 
             # RequirementsSlot(id, air, lotus, water, earth, fire)
-    SlotA = RequirementsSlot('g362', 'g24', 'g26', 'g361', 'g54', 'g53')
-    SlotB = RequirementsSlot('g357', 'g32', 'g34', 'g356', 'g30', 'g28')
-    SlotC = RequirementsSlot('g353', 'g42', 'g44', 'g307', 'g39', 'g36')
-    SlotD = RequirementsSlot('g367', 'g56', 'g58', 'g366', 'g54', 'g53')
+    SLOT_A = RequirementsSlot('g362', 'g24', 'g26', 'g361', 'g54', 'g53')
+    SLOT_B = RequirementsSlot('g357', 'g32', 'g34', 'g356', 'g30', 'g28')
+    SLOT_C = RequirementsSlot('g353', 'g42', 'g44', 'g307', 'g39', 'g36')
+    SLOT_D = RequirementsSlot('g367', 'g56', 'g58', 'g366', 'g54', 'g53')
 
     FiveThreeThreeThree = 'g5'
     ThreeFiveThreeThree = 'g2'
@@ -191,8 +202,13 @@ class FourTray:
         if len(requirements) != 4:
             raise ValueError("Four Tray requirements can only be of length four")
     
+        self.slotA = self.SLOT_A.clone()
+        self.slotB = self.SLOT_B.clone()
+        self.slotC = self.SLOT_C.clone()
+        self.slotD = self.SLOT_D.clone()
+
         values = list()
-        slotsToAssign = [self.SlotD, self.SlotC, self.SlotB, self.SlotA]
+        slotsToAssign = [self.slotD, self.slotC, self.slotB, self.slotA]
         for aType in ResourceType:
             if aType in requirements:
                 slot = slotsToAssign.pop()
@@ -217,7 +233,7 @@ class FourTray:
     def allNumsTree(self):
         return { 
                 5: {3:{3:{3:self.FiveThreeThreeThree}}}, 
-                3: {3:{3:{5:self.ThreeThreeThreeFive}, 5:{3:self.ThreeThreeFiveThree}}}, 
+                3: {3:{3:{5:self.ThreeThreeThreeFive}, 5:{3:self.ThreeThreeFiveThree}}, 5:{3:{3:self.ThreeFiveThreeThree}}}, 
                 2: {1:{1:{1:self.TwoOneOneOne}}},
                 1: {1:{1:{1:self.OneOneOneOne, 2:self.OneOneOneTwo},2: {1:self.OneOneTwoOne}}, 2:{1:{1:self.OneTwoOneOne},},}
             }
@@ -228,15 +244,15 @@ class FourTray:
         otherNums.remove(self.numsId)
         toggler.offIds.update(otherNums)
         toggler.onIds.update([self.TrayId, self.numsId])
-        self.SlotA.addToToggler(toggler)
-        self.SlotB.addToToggler(toggler)
-        self.SlotC.addToToggler(toggler)
-        self.SlotD.addToToggler(toggler)
+        self.slotA.addToToggler(toggler)
+        self.slotB.addToToggler(toggler)
+        self.slotC.addToToggler(toggler)
+        self.slotD.addToToggler(toggler)
 
 class TwoTray:
     TrayId = 'g1812'
-    SlotA = RequirementsSlot('g1808', 'g6', 'g9', 'g1804', 'g4', 'g3')
-    SlotB = RequirementsSlot('g1802', 'g14', 'g16', 'g1798', 'g13', 'g10')
+    SLOT_A = RequirementsSlot('g1808', 'g6', 'g9', 'g1804', 'g4', 'g3')
+    SLOT_B = RequirementsSlot('g1802', 'g14', 'g16', 'g1798', 'g13', 'g10')
 
     SevenThree = 'g341'
     ThreeSeven = 'g339'
@@ -269,16 +285,19 @@ class TwoTray:
     def __init__(self, requirements) -> None:
         if len(requirements) != 2:
             raise ValueError("Two Tray requirements can only be of length two")
+        
+        self.slotA = self.SLOT_A.clone()
+        self.slotB = self.SLOT_B.clone()
     
         value_a = 0
         value_b = 0    
         for aType in ResourceType:
             if aType in requirements:
-                if self.SlotA.onType is None:
-                    self.SlotA.setType(aType)
+                if self.slotA.onType is None:
+                    self.slotA.setType(aType)
                     value_a = requirements[aType]
                 else:
-                    self.SlotB.setType(aType)
+                    self.slotB.setType(aType)
                     value_b = requirements[aType]
         
         self.numsId = self.allNumsTree()[value_a][value_b]
@@ -289,8 +308,8 @@ class TwoTray:
         otherNums.remove(self.numsId)
         toggler.offIds.update(otherNums)
         toggler.onIds.update([self.TrayId, self.numsId])
-        self.SlotA.addToToggler(toggler)
-        self.SlotB.addToToggler(toggler)
+        self.slotA.addToToggler(toggler)
+        self.slotB.addToToggler(toggler)
 
 class VictoryPoints:
 

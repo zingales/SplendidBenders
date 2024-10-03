@@ -3,7 +3,9 @@ from enum import Enum
 import xml.etree.ElementTree as ET
 
 
-ResourceType = Enum('Type', ['Air', 'Lotus', 'Water', 'Earth','Fire'])
+# White,Blue,Green,Red,Black
+
+ResourceType = Enum('Type', ['Lotus', 'Water', 'Earth', 'Fire', 'Air'])
 
 class Toggler:
 
@@ -44,6 +46,11 @@ class RequirementsSlot:
         self.earth_id = earth_id
         self.fire_id = fire_id
         self.onType = None
+
+    def clone(self):
+        slot = RequirementsSlot(self.id, self.air_id, self.lotus_id, self.water_id, self.earth_id, self.fire_id)
+        slot.onType = self.onType
+        return slot
 
     def setType(self, type):
         self.onType = type
