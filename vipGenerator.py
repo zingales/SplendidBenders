@@ -1,4 +1,4 @@
-from toggleSVG import *
+from toggleSVG import RequirementsSlot, ResourceType, Toggler
 
 
 slotA = RequirementsSlot('g2', 'g57', 'g1030', 'g1032', 'g1033', 'g1034')

@@ -365,8 +365,6 @@ class Border:
         removeBorders = list(self.Borders.values())
         removeBorders.remove(self.border)
 
-
-
 def allTrayIds():
     return {TwoTray.TrayId, FourTray.TrayId, OddTray.TrayId}
 
