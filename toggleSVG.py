@@ -15,6 +15,11 @@ class Toggler:
         self.onIds = set()
         self.offIds = set()
 
+        self.imageHrefUpdate = {
+            'stone-texture.jpg':r"file:///D:/Dropbox/Eppe's%20Stuff/Avatar%20Splenor%20Assets/Inkscape_SVG/stone-texture.jpg", 
+            'goldOrbDB.png': r"file:///D:/Dropbox/Eppe's%20Stuff/Avatar%20Splenor%20Assets/Inkscape_SVG/goldOrbDB.png", 
+            }
+
         self.updateImageHref = None
 
 
@@ -38,14 +43,20 @@ class Toggler:
                 group.set('style', updatedStyle)
                 group.set('display', 'none')
    
-        if self.updateImageHref is not None:
-            for image in root.findall('.//svg:image', namespaces):
+
+        for image in root.findall('.//svg:image', namespaces):
+            imageHref = image.get(self.SVG_XML_HREF_TAG)
+            if imageHref in self.imageHrefUpdate:
+                image.set(self.SVG_XML_HREF_TAG, self.imageHrefUpdate[imageHref])
+            if self.updateImageHref is not None:
                 if image.get('id') == 'AvatarScreenShot':
                     original_image_path = image.get(self.SVG_XML_HREF_TAG)
                     image.set(self.SVG_XML_HREF_TAG, str(self.updateImageHref))
                     # print(image.get('{http://www.w3.org/1999/xlink}href'))
                     print(f"updated image path {original_image_path} to {self.updateImageHref}")
 
+        
+            
         # Write the modified SVG to a new file
         tree.write(output_svg)
 

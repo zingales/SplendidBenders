@@ -371,6 +371,7 @@ class Border:
     }
 
     def __init__(self, type) -> None:
+        self.type = type
         self.border = self.Borders[type]
         self.background = self.Backgrounds[type]
 
@@ -383,6 +384,7 @@ class Border:
 
         removeBorders = list(self.Borders.values())
         removeBorders.remove(self.border)
+        toggler.offIds.update(removeBorders)
 
 def allTrayIds():
     return {TwoTray.TrayId, FourTray.TrayId, OddTray.TrayId}
@@ -390,6 +392,8 @@ def allTrayIds():
 def generateResourceCad(outputFile, requirements, victorypoints, type, image, input_svg):
     toggler = Toggler()
     
+    escapedPath = str(image).replace(' ', '%20').replace('\\', '/')
+    toggler.updateImageHref = f'file:///{escapedPath}' 
     
     if len(requirements) == 1:
         tray = OddTray(requirements)

@@ -98,8 +98,36 @@ def loadResourceCardsFromCsv(csvFile) -> tuple[list[ResourceCard], list[Exceptio
 
         return cards, errors
 
+def loadImagePaths(assetsPath):
+    ResourceCardFolderName = "Resource Cards Images"    
+    AirFolder = "Air Nomads"
+    EarthFolder = "Earth Kingdom"
+    FireFolder = "Fire Nation"
+    WaterFolder = "Water Tribe"
+    WhiteLotusFolder = "White Lotus"
 
-def main(outputFolderPath, resourceCardsCSV, vipCardsCSV, vipTemplateSvg, resourceCardTemplateSvg):
+    folderNameToResourceType = {
+        AirFolder:ResourceType.Air,
+        EarthFolder:ResourceType.Earth,
+        FireFolder:ResourceType.Fire,
+        WaterFolder:ResourceType.Water,
+        WhiteLotusFolder:ResourceType.Lotus
+    }
+
+    toReturn = defaultdict(list)
+
+    for folderName, resourceType in folderNameToResourceType.items():
+        path = assetsPath / ResourceCardFolderName / folderName
+        if path.is_dir():
+            images = Path(path).glob("*.png")
+            toReturn[resourceType] = list(images)
+        else:
+            logging.debug(f"path {path} doesn't exist")
+
+
+    return toReturn
+
+def main(outputFolderPath, resourceCardsCSV, vipCardsCSV, vipTemplateSvg, resourceCardTemplateSvg, imagesByType):
 
     svgsPath = outputFolderPath / "SVGs"
 
@@ -110,6 +138,8 @@ def main(outputFolderPath, resourceCardsCSV, vipCardsCSV, vipTemplateSvg, resour
     logging.info(f"number of bad rows {len(errors)}")
     if len(errors) > 0:
         logging.error(f"{errors}")
+    for card in resourceCards:
+        card.image = imagesByType[card.produces].pop()
 
      # Genereate VIP Pdf
     vipCards, errors = loadVIPCardsFromCsv(vipCardsCSV)    
@@ -147,10 +177,12 @@ if __name__ == "__main__":
     assetsPath = Path(r"D:\Dropbox\Eppe's Stuff\Avatar Splenor Assets")
 
 
+    imagesByType = loadImagePaths(assetsPath)
+
     resourceCardsCSV = assetsPath / "resourceCards.csv"
     vipCardsCSV = assetsPath / "VIPCards.csv"
 
     vipTemplateSvg = assetsPath/ "Inkscape_SVG" / "VIP_Front.svg"
     resourceCardTemplateSvg = assetsPath/ "Inkscape_SVG" / "AllCards_v3.svg"
 
-    main(outputFolderPath, resourceCardsCSV, vipCardsCSV, vipTemplateSvg, resourceCardTemplateSvg)
+    main(outputFolderPath, resourceCardsCSV, vipCardsCSV, vipTemplateSvg, resourceCardTemplateSvg, imagesByType)
