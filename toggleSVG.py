@@ -1,6 +1,7 @@
 
 from enum import Enum
 import xml.etree.ElementTree as ET
+import logging
 
 
 # White,Blue,Green,Red,Black
@@ -15,9 +16,13 @@ class Toggler:
         self.onIds = set()
         self.offIds = set()
 
+        self.updateStyle = dict()
+
         self.imageHrefUpdate = {
             'stone-texture.jpg':r"file:///D:/Dropbox/Eppe's%20Stuff/Avatar%20Splenor%20Assets/Inkscape_SVG/stone-texture.jpg", 
             'goldOrbDB.png': r"file:///D:/Dropbox/Eppe's%20Stuff/Avatar%20Splenor%20Assets/Inkscape_SVG/goldOrbDB.png", 
+            'wood.jpg': r"file:///D:/Dropbox/Eppe's%20Stuff/Avatar%20Splenor%20Assets/Inkscape_SVG/wood.jpg",
+            'dark-wood.png': r"file:///D:/Dropbox/Eppe's%20Stuff/Avatar%20Splenor%20Assets/Inkscape_SVG/dark-wood.png",
             }
 
         self.updateImageHref = None
@@ -32,16 +37,22 @@ class Toggler:
         # Find the SVG namespace
         namespaces = {'svg': 'http://www.w3.org/2000/svg'}
 
+        styleUpdateIds = list(self.updateStyle.keys())
         # Iterate over all <g> elements
         for group in root.findall('.//svg:g', namespaces):
-            if group.get('id') in self.onIds:
+            id = group.get("id")
+            if id in self.onIds:
                 updatedStyle = group.get('style', '').replace('display:inline;', '').replace('display:none;', '').replace('display:none', '').replace('display:inline', '')
                 group.set('style', updatedStyle)
                 group.set('display', 'inline')
-            elif group.get('id') in self.offIds:
+            elif id in self.offIds:
                 updatedStyle = group.get('style', '').replace('display:inline;', '').replace('display:none;', '').replace('display:none', '').replace('display:inline', '')
                 group.set('style', updatedStyle)
                 group.set('display', 'none')
+            elif id in styleUpdateIds:
+                originalStyle = group.get('style', '')
+                group.set('style', f'{self.updateStyle[id]};{originalStyle}')
+
    
 
         for image in root.findall('.//svg:image', namespaces):
@@ -59,6 +70,55 @@ class Toggler:
             
         # Write the modified SVG to a new file
         tree.write(output_svg)
+
+class VIPCardRequirement:
+    TypeToFillColor = {
+        ResourceType.Air: "#e9ab00",
+        ResourceType.Lotus: "#fff9ea",
+        ResourceType.Water: "#e9ab00",
+        ResourceType.Earth: "#2c7106",
+        ResourceType.Fire: "#d4160e",
+    }
+
+    def __init__(self, id, cards, fourthCardId, num3Id, num4Id):
+        self.id = id
+        self.cards = cards
+        self.fourthCardId = fourthCardId
+        self.num3Id = num3Id
+        self.num4Id = num4Id
+        self.onType = None
+        self.isThree = True
+
+    def clone(self):
+        slot = VIPCardRequirement(self.id, self.cards, self.fourthCardId, self.num3Id, self.num4Id)
+        slot.onType = self.onType
+        return slot
+    
+    def setTypeAndCount(self, type, isThree):
+        self.onType = type
+        self.isThree = isThree
+
+    def turnOff(self):
+        self.onType = None
+
+    def addToToggler(self, toggler):
+        if self.onType:
+            toggler.updateStyle[self.cards] = f"fill: {self.TypeToFillColor[self.onType]}"
+            if self.isThree:
+                toggler.onIds.add(self.num3Id)
+                toggler.offIds.add(self.num4Id)
+                toggler.offIds.add(self.fourthCardId)
+            else:
+                toggler.offIds.add(self.num3Id)
+                toggler.onIds.add(self.num4Id)
+                toggler.onIds.add(self.fourthCardId)
+        else:
+            toggler.offIds.add(self.id)
+        
+
+
+
+    
 
 class RequirementsSlot:
     def __init__(self, id, air_id, lotus_id, water_id, earth_id, fire_id):

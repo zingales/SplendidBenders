@@ -1,54 +1,50 @@
-from toggleSVG import RequirementsSlot, ResourceType, Toggler
+from toggleSVG import VIPCardRequirement, ResourceType, Toggler
 
 
-slotA = RequirementsSlot('g2', 'g57', 'g1030', 'g1032', 'g1033', 'g1034')
-slotB = RequirementsSlot('g18', 'g17', 'g12', 'g10', 'g8', 'g6')
-slotC = RequirementsSlot('g32', 'g31', 'g26', 'g24', 'g22', 'g20')
+QuoteIds = [
+    "g1277",
+    "g1278",
+    "g1279",
+    "g1280",
+    "g1281",
+    "g1282",
+    "g1283",
+    "g1284",
+    "g1285",
+    "g1286",
+]
+
+slotA = VIPCardRequirement('g28','g4','g1268', 'g1269','g1270')
+slotB = VIPCardRequirement('g31', 'g5','g1271', 'g1272','g1273')
+slotC = VIPCardRequirement('g34','g6','g1274', 'g1275','g1276')
+
+def generateVIPImage(outputFile, types, input_svg, quoteNumber):
+    toggler = Toggler()
 
 
-class VIPCounts:
+    quoteId = QuoteIds[quoteNumber]
+    otherQuoteIds = list(QuoteIds)
+    otherQuoteIds.remove(quoteId)
 
-    threeByThree_id = 'g4'
-    fourByTwo_id = 'g36'
-
-    def __init__(self, isThreebByThree) -> None:
-        if isThreebByThree:
-            self.onId = self.threeByThree_id
-            self.offId = self.fourByTwo_id
-        else:
-            self.onId = self.fourByTwo_id
-            self.offId = self.threeByThree_id
-
-
-    def addToToggler(self, toggler):
-        toggler.onIds.add(self.onId)
-        toggler.offIds.add(self.offId)
-
-
-def set_vip_requirements(types, toggler):
     typeKeys = list(types.keys())
     if len(typeKeys) == 3:
-        slotA.setType(typeKeys[0])
-        slotB.setType(typeKeys[1])
-        slotC.setType(typeKeys[2])
-        count = VIPCounts(isThreebByThree=True)
+        isThree = True
+        slotA.setTypeAndCount(typeKeys[0], isThree)
+        slotB.setTypeAndCount(typeKeys[1], isThree)
+        slotC.setTypeAndCount(typeKeys[2], isThree)
     else:
-        slotA.setType(typeKeys[0])
-        slotB.setType(typeKeys[1])
+        isThree = False
+        slotA.setTypeAndCount(typeKeys[0], isThree)
+        slotB.setTypeAndCount(typeKeys[1], isThree)
         slotC.turnOff()
-        count = VIPCounts(isThreebByThree=False)
     
-    count.addToToggler(toggler=toggler)
     slotA.addToToggler(toggler)
     slotB.addToToggler(toggler)
     slotC.addToToggler(toggler)
+
+    toggler.onIds.add(quoteId)
+    toggler.offIds.update(otherQuoteIds)
     
-
-
-def generateVIPImage(outputFile, types, input_svg):
-    toggler = Toggler()
-
-    set_vip_requirements(types, toggler)
 
     toggler.execute(input_svg, outputFile)
     print(f'Generated file {outputFile}')
@@ -56,5 +52,10 @@ def generateVIPImage(outputFile, types, input_svg):
 
 if __name__ == "__main__":
     output = 'output/number1.svg'
-    generateVIPImage(output, types = [ResourceType.Fire, ResourceType.Lotus])
+    input_svg = r"D:\Dropbox\Eppe's Stuff\Avatar Splenor Assets\Inkscape_SVG\Vip Front All.svg"
+    generateVIPImage(
+        outputFile = output, 
+        types = {ResourceType.Fire:4, ResourceType.Lotus:4, ResourceType.Air:3}, 
+        input_svg=input_svg, 
+        quoteNumber=0)
 

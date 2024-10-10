@@ -26,15 +26,20 @@ class BadCSVRow(ValueError):
 
 class VIPCard:
 
-    def __init__(self, requires, victoryPoints, quote, originRow) -> None:
+    def __init__(self, requires, victoryPoints, quoteNum, originRow) -> None:
         self.requirements = requires
         self.victoryPoints = victoryPoints
-        self.quote = quote
+        self.quoteNum = quoteNum
         self.originRow = originRow
 
     def generateSVG(self, outputFolder, input_svg):
         outputFile = outputFolder/f'VIP/VIP_{self.originRow}.svg'
-        generateVIPImage(outputFile, self.requirements, input_svg)
+        generateVIPImage(
+            outputFile=outputFile, 
+            types=self.requirements, 
+            input_svg=input_svg, 
+            quoteNumber=self.quoteNum
+        )
         return outputFile
 
 class ResourceCard:
@@ -58,6 +63,7 @@ def loadVIPCardsFromCsv(csvFile) -> tuple[list[VIPCard], list[Exception]]:
         cards = list()
         errors = list()
         rowCount = 1
+        quoteCount = 0
         for row in reader:
             try:
                 victoryPoints = int(row['Victor Points']) 
@@ -65,7 +71,8 @@ def loadVIPCardsFromCsv(csvFile) -> tuple[list[VIPCard], list[Exception]]:
                 for ogColor, resourceType in conversionColorToResourceType.items():
                     if row[ogColor] != '':
                         requirements[resourceType] = int(row[ogColor])
-                cards.append(VIPCard(requires=requirements, victoryPoints=victoryPoints, quote="", originRow=rowCount))
+                cards.append(VIPCard(requires=requirements, victoryPoints=victoryPoints, quoteNum=quoteCount, originRow=rowCount))
+                quoteCount += 1
             except (KeyError,ValueError) as e:
                 customError = BadCSVRow(rowCount, f"{row}", e)
                 errors.append(customError)
@@ -138,6 +145,8 @@ def main(outputFolderPath, resourceCardsCSV, vipCardsCSV, vipTemplateSvg, resour
     logging.info(f"number of bad rows {len(errors)}")
     if len(errors) > 0:
         logging.error(f"{errors}")
+
+    # Add images to Resource Cards
     for card in resourceCards:
         card.image = imagesByType[card.produces].pop()
 
@@ -148,26 +157,23 @@ def main(outputFolderPath, resourceCardsCSV, vipCardsCSV, vipTemplateSvg, resour
     if len(errors) > 0:
         logging.error(f"{errors}")
 
-    resourceCardSvgs = list()
-    for card in resourceCards:
-        resourceCardSvgs.append(card.generateSVG(svgsPath, resourceCardTemplateSvg))
+    def genSVGandPNGFunc(svgTemplate):
+        return lambda card: card.generateSVG(svgsPath, svgTemplate)
 
-    vipCardSvgs = list()
-    for card in vipCards:
-        vipCardSvgs.append(card.generateSVG(svgsPath, vipTemplateSvg))
-    logging.info("Done Generating SVGs")
+    def svgFromTemplateToPng(svgPath):
+        outputPath = Path(str(svgPath).replace("SVGs", 'PNGs').replace('.svg', '.png'))
+        svg_to_png(svgPath, outputPath)
+        return outputPath
 
 
-    logging.info("Generating VIP PNGs")
-    for vipPath in vipCardSvgs:
-        outputPath = Path(str(vipPath).replace("SVGs", 'PNGs').replace('.svg', '.png'))
-        svg_to_png(vipPath, outputPath)
+    # resourceCardPNGs = map(svgFromTemplateToPng, map(genSVGandPNGFunc(resourceCardTemplateSvg), resourceCards))
+    # logging.info(f'Generated {len(list(resourceCardPNGs))} resource card PNGs')
 
-    logging.info("Generating ResourceCard PNGs")
-    for resourcePath in resourceCardSvgs:
-        outputPath = Path(str(resourcePath).replace("SVGs", 'PNGs').replace('.svg', '.png'))
-        svg_to_png(resourcePath, outputPath)
+    vipCardPNGs = map(svgFromTemplateToPng, map(genSVGandPNGFunc(vipTemplateSvg), vipCards))
+    logging.info(f'Generated {len(list(vipCardPNGs))} vip card PNGs')
 
+    
+    
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
@@ -182,7 +188,7 @@ if __name__ == "__main__":
     resourceCardsCSV = assetsPath / "resourceCards.csv"
     vipCardsCSV = assetsPath / "VIPCards.csv"
 
-    vipTemplateSvg = assetsPath/ "Inkscape_SVG" / "VIP_Front.svg"
-    resourceCardTemplateSvg = assetsPath/ "Inkscape_SVG" / "AllCards_v3.svg"
+    vipTemplateSvg = assetsPath/ "Inkscape_SVG" / "VIP Front All.svg"
+    resourceCardTemplateSvg = assetsPath/ "Inkscape_SVG" / "AllCards_v3_Working.svg"
 
     main(outputFolderPath, resourceCardsCSV, vipCardsCSV, vipTemplateSvg, resourceCardTemplateSvg, imagesByType)
