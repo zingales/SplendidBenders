@@ -39,17 +39,24 @@ class Toggler:
 
         styleUpdateIds = list(self.updateStyle.keys())
         # Iterate over all <g> elements
-        for group in root.findall('.//svg:g', namespaces):
+        # for group in root.findall('.//svg:g', namespaces):
+        for group in root.iter():        
             id = group.get("id")
             if id in self.onIds:
                 updatedStyle = group.get('style', '').replace('display:inline;', '').replace('display:none;', '').replace('display:none', '').replace('display:inline', '')
-                group.set('style', updatedStyle)
+                if len(updatedStyle) == 0 and 'style' in group.attrib:
+                    del group.attrib['style']
+                else:
+                    group.set('style', updatedStyle)
                 group.set('display', 'inline')
             elif id in self.offIds:
                 updatedStyle = group.get('style', '').replace('display:inline;', '').replace('display:none;', '').replace('display:none', '').replace('display:inline', '')
-                group.set('style', updatedStyle)
+                if len(updatedStyle) == 0 and 'style' in group.attrib:
+                    del group.attrib['style']
+                else:
+                    group.set('style', updatedStyle)
                 group.set('display', 'none')
-            elif id in styleUpdateIds:
+            if id in styleUpdateIds:
                 originalStyle = group.get('style', '')
                 group.set('style', f'{self.updateStyle[id]};{originalStyle}')
 
@@ -63,8 +70,7 @@ class Toggler:
                 if image.get('id') == 'AvatarScreenShot':
                     original_image_path = image.get(self.SVG_XML_HREF_TAG)
                     image.set(self.SVG_XML_HREF_TAG, str(self.updateImageHref))
-                    # print(image.get('{http://www.w3.org/1999/xlink}href'))
-                    print(f"updated image path {original_image_path} to {self.updateImageHref}")
+                    logging.debug(f"updated image path {original_image_path} to {self.updateImageHref}")
 
         
             
@@ -72,12 +78,12 @@ class Toggler:
         tree.write(output_svg)
 
 class VIPCardRequirement:
-    TypeToFillColor = {
-        ResourceType.Air: "#e9ab00",
-        ResourceType.Lotus: "#fff9ea",
-        ResourceType.Water: "#e9ab00",
-        ResourceType.Earth: "#2c7106",
-        ResourceType.Fire: "#d4160e",
+    TypeToStyleUpdate = {
+        ResourceType.Air: "fill:#e9ab00;filter: url(#filter1267)",
+        ResourceType.Lotus: "fill:#fff9ea;filter: url(#filter1267)",
+        ResourceType.Water: "fill:#2b4e68;filter: url(#filter72)",
+        ResourceType.Earth: "fill:#2c7106;filter: url(#filter1267)",
+        ResourceType.Fire: "fill:#d4160e;filter: url(#filter1267)",
     }
 
     def __init__(self, id, cards, fourthCardId, num3Id, num4Id):
@@ -103,7 +109,7 @@ class VIPCardRequirement:
 
     def addToToggler(self, toggler):
         if self.onType:
-            toggler.updateStyle[self.cards] = f"fill: {self.TypeToFillColor[self.onType]}"
+            toggler.updateStyle[self.cards] = self.TypeToStyleUpdate[self.onType]
             if self.isThree:
                 toggler.onIds.add(self.num3Id)
                 toggler.offIds.add(self.num4Id)
@@ -114,15 +120,22 @@ class VIPCardRequirement:
                 toggler.onIds.add(self.fourthCardId)
         else:
             toggler.offIds.add(self.id)
-        
 
-
-
-    
+ 
 
 class RequirementsSlot:
-    def __init__(self, id, air_id, lotus_id, water_id, earth_id, fire_id):
+
+    TypeToStyleUpdate = {
+        ResourceType.Air: "fill:#f6d7d6;fill-opacity:1",
+        ResourceType.Lotus: "fill:#fdfbf3;fill-opacity:1",
+        ResourceType.Water: "fill:#d8e2eb;fill-opacity:1",
+        ResourceType.Earth: "fill:#dce8d5;fill-opacity:1",
+        ResourceType.Fire: "fill:#f6d7d6;fill-opacity:1",
+    }
+
+    def __init__(self, id, numbers, air_id, lotus_id, water_id, earth_id, fire_id):
         self.id = id
+        self.numbers = numbers
         self.air_id = air_id
         self.lotus_id = lotus_id
         self.water_id = water_id
@@ -131,17 +144,19 @@ class RequirementsSlot:
         self.onType = None
 
     def clone(self):
-        slot = RequirementsSlot(self.id, self.air_id, self.lotus_id, self.water_id, self.earth_id, self.fire_id)
+        slot = RequirementsSlot(self.id, dict(self.numbers), self.air_id, self.lotus_id, self.water_id, self.earth_id, self.fire_id)
         slot.onType = self.onType
         return slot
 
-    def setType(self, type):
+    def setTypeAndCount(self, type, num):
         self.onType = type
+        self.num = num
 
     def turnOff(self):
         self.onType = None
 
     def addToToggler(self, toggler):
+        numberValues = list(self.numbers.values())
         if self.onType:
             toggler.onIds.add(self.id)
             requirementIds = {self.air_id, self.lotus_id, self.water_id, self.earth_id, self.fire_id}
@@ -157,11 +172,22 @@ class RequirementsSlot:
                 toShow = self.fire_id
 
             requirementIds.remove(toShow)
+
+            numToShow = self.numbers[self.num]
+            numberValues.remove(numToShow)
+
+
             toggler.onIds.add(toShow)
+            toggler.onIds.add(numToShow)
+
             toggler.offIds.update(requirementIds)
+            toggler.offIds.update(numberValues)
+
+            toggler.updateStyle[numToShow] = self.TypeToStyleUpdate[self.onType]
 
         else:
             toggler.offIds.add(self.id)
+            toggler.offIds.update(numberValues)
 
 
 if __name__ == "__main__":

@@ -1,140 +1,70 @@
 from toggleSVG import Toggler, RequirementsSlot, ResourceType
+import logging
 
 class OddTray:
     TrayId = 'g1763'
 
-            # RequirementsSlot(id, air, lotus, water, earth, fire)
-    SLOT_A = RequirementsSlot('g1762', 'g66', 'g64', 'g62', 'g60', 'g1757')
-    SLOT_B = RequirementsSlot('g1755', 'g74', 'g72', 'g70', 'g68', 'g1751')
-    SLOT_C = RequirementsSlot('g1749', 'g82', 'g80', 'g78', 'g76', 'g1745')
-    
+    NUMBERS_A = {
+        7:'text75',
+        6:'text77',
+        5:'text20',
+        4:'text78',
+        3:'text18',
+        2:'text11',
+        1:'text9'
+    }
 
-    def threeNumTree(self):
-        return {
-            1:{
-                1:{
-                    2:self.OneOneTwo,
-                    3:self.OneOneThree,
-                }, 2: {
-                    2:self.OneTwoTwo
-                }, 3: {
-                    1:self.OneThreeOne,
-                }, 4: {
-                    2:self.OneFourTwo
-                }
-            }, 
-            2:{
-                1:{
-                    2:self.TwoOneTwo,
-                    4:self.TwoOneFour
-                }, 
-                2:{
-                    1:self.TwoTwoOne,
-                    3:self.TwoTwoThree
-                },
-                3: {
-                    2:self.TwoThreeTwo,
-                    3:self.TwoThreeThree
-                },
-                
-            }, 
-            3:{
-                1: {
-                    1:self.ThreeOneOne,
-                },
-                2: {
-                    2:self.ThreeTwoTwo,
-                    3:self.ThreeTwoThree,
-                },
-                3: {
-                    2:self.ThreeThreeTwo,
-                    6:self.ThreeThreeSix
-                },
-                6: {
-                    3:self.ThreeSixThree,
-                }
-            }, 
-            4: {
-                2: {
-                    1:self.FourTwoOne
-                }
-            },
-            6: {
-                2: {
-                    1:self.SixTwoOne,
-                },
-                3: {
-                    3:self.SixThreeThree
-                }
-            }
-        }
+    NUMBERS_B = {
+        7:'text81',
+        6:'text80',
+        5:'text38',
+        4:'text79',
+        3:'text35',
+        2:'text33',
+        1:'text31'
+    }
 
-
-    OneOneTwo = 'g294'
-
-    OneTwoTwo = 'g317'
-    TwoOneTwo = 'g266'
-    TwoTwoOne = 'g280'
-
-    OneOneThree = 'g305'
-    OneThreeOne = 'g299'
-    ThreeOneOne = 'g254'
-
-    TwoTwoThree = 'g270'
-    TwoThreeTwo = 'g274'
-    ThreeTwoTwo = 'g248'
-
-    TwoThreeThree = 'g227'
-    ThreeTwoThree = 'g241'
-    ThreeThreeTwo = 'g236'
-
-    OneFourTwo = 'g259'
-    TwoOneFour = 'g287'
-    FourTwoOne = 'g8'
-
-    SixTwoOne = 'g210'
-
-    ThreeThreeSix = 'g216'
-    ThreeSixThree = 'g221'
-    SixThreeThree = 'g212'
-
-    Seven = 'g336'
-    Six = 'g335'
-    Five = 'g334'
-    Four = 'g333'
-    Three = 'g331'
-
-
-    def allNums(self):
-        return {
-            self.OneOneTwo,
-            self.OneTwoTwo,
-            self.TwoOneTwo,
-            self.TwoTwoOne,
-            self.OneOneThree,
-            self.OneThreeOne,
-            self.ThreeOneOne,
-            self.TwoTwoThree,
-            self.TwoThreeTwo,
-            self.ThreeTwoTwo,
-            self.TwoThreeThree,
-            self.ThreeTwoThree,
-            self.ThreeThreeTwo,
-            self.OneFourTwo,
-            self.TwoOneFour,
-            self.FourTwoOne,
-            self.SixTwoOne,
-            self.ThreeThreeSix,
-            self.ThreeSixThree,
-            self.SixThreeThree,
-            self.Seven, 
-            self.Six, 
-            self.Five, 
-            self.Four,
-            self.Three
-            }
+    NUMBERS_C = {
+        7:'text85',
+        6:'text84',
+        5:'text67',
+        4:'text83',
+        3:'text65',
+        2:'text47',
+        1:'text46'
+    }
 
     
+    SLOT_A = RequirementsSlot(
+        id='g1762', 
+        numbers=NUMBERS_A,
+        air_id='g66', 
+        lotus_id='g64', 
+        water_id='g62', 
+        earth_id='g60', 
+        fire_id='g1757'
+    )
+
+    SLOT_B = RequirementsSlot(
+        id='g1755', 
+        numbers=NUMBERS_B,
+        air_id='g74', 
+        lotus_id='g72', 
+        water_id='g70', 
+        earth_id='g68', 
+        fire_id='g1751'
+    )
+
+    SLOT_C = RequirementsSlot(
+        id='g1749', 
+        numbers=NUMBERS_C, 
+        air_id='g82', 
+        lotus_id='g80', 
+        water_id='g78', 
+        earth_id='g76', 
+        fire_id='g1745'
+    )
+        
     def __init__(self, requirements) -> None:
         
         self.slotA = self.SLOT_A.clone()
@@ -146,34 +76,21 @@ class OddTray:
             self.slotC.turnOff()
             self.slotA.turnOff()
             aType = list(requirements.keys())[0]
-            self.slotB.setType(aType)
-            self.numsId = self.oneNumTree()[requirements[aType]]
+            self.slotB.setTypeAndCount(aType, requirements[aType])
 
 
 
         elif len(requirements) == 3:
-            values = list()
             slotsToAssign = [self.slotC, self.slotB, self.slotA]
             for aType in ResourceType:
                 if aType in requirements:
                     slot = slotsToAssign.pop()
-                    slot.setType(aType)
-                    values.append(requirements[aType])
-                    
-            self.numsId = self.threeNumTree()[values[0]][values[1]][values[2]]
+                    slot.setTypeAndCount(aType, requirements[aType])
         else:
             raise ValueError("Odd Tray requirements can only be of length 1 or 3")    
-    
-    
-
-    def oneNumTree(self):
-        return {7:self.Seven, 6:self.Six, 5:self.Five, 4:self.Four, 3:self.Three}
 
     def addToToggler(self, toggler):
-        otherNums = self.allNums()
-        otherNums.remove(self.numsId)
-        toggler.offIds.update(otherNums)
-        toggler.onIds.update([self.TrayId, self.numsId])
+        toggler.onIds.add(self.TrayId)
         self.slotA.addToToggler(toggler)
         self.slotB.addToToggler(toggler)
         self.slotC.addToToggler(toggler)
@@ -181,22 +98,74 @@ class OddTray:
 class FourTray:
     TrayId = 'g170'
 
-            # RequirementsSlot(id, air, lotus, water, earth, fire)
-    SLOT_A = RequirementsSlot('g362', 'g24', 'g26', 'g361', 'g54', 'g53')
-    SLOT_B = RequirementsSlot('g357', 'g32', 'g34', 'g356', 'g30', 'g28')
-    SLOT_C = RequirementsSlot('g353', 'g42', 'g44', 'g307', 'g39', 'g36')
-    SLOT_D = RequirementsSlot('g367', 'g56', 'g58', 'g366', 'g54', 'g53')
 
-    FiveThreeThreeThree = 'g5'
-    ThreeFiveThreeThree = 'g2'
-    ThreeThreeFiveThree = 'g161'
-    ThreeThreeThreeFive = 'g177'
+    NUMBERS_A = {
+        5:'text222',
+        3:'text215',
+        2:'text213',
+        1:'text154'
+    }
 
-    TwoOneOneOne = 'g183'
-    OneTwoOneOne = 'g189'
-    OneOneTwoOne = 'g198'
-    OneOneOneTwo = 'g206'
-    OneOneOneOne = 'g167'
+    NUMBERS_B = {
+        5:'text230',
+        3:'text229',
+        2:'text228',
+        1:'text226'
+    }
+
+    NUMBERS_C = {
+        5:'g316',
+        3:'g315',
+        2:'g313',
+        1:'g312'
+    }
+
+    NUMBERS_D = {
+        5:'g340',
+        3:'g332',
+        2:'g320',
+        1:'g319'
+    }
+
+    SLOT_A = RequirementsSlot(
+        id='g362', 
+        numbers=NUMBERS_A,
+        air_id='g24', 
+        lotus_id='g26', 
+        water_id='g361', 
+        earth_id='g54', 
+        fire_id='g53'
+    )
+    
+    SLOT_B = RequirementsSlot(
+        id='g357', 
+        numbers=NUMBERS_B,
+        air_id='g32', 
+        lotus_id='g34', 
+        water_id='g356', 
+        earth_id='g30', 
+        fire_id='g28'
+    )
+    
+    SLOT_C = RequirementsSlot(
+        id='g353', 
+        numbers=NUMBERS_C,
+        air_id='g42', 
+        lotus_id='g44', 
+        water_id='g307', 
+        earth_id='g39', 
+        fire_id='g36'
+    )
+    
+    SLOT_D = RequirementsSlot(
+        id='g367', 
+        numbers=NUMBERS_D,
+        air_id='g56', 
+        lotus_id='g58', 
+        water_id='g366', 
+        earth_id='g54', 
+        fire_id='g53'
+    )
 
     def __init__(self, requirements) -> None:
         if len(requirements) != 4:
@@ -212,38 +181,10 @@ class FourTray:
         for aType in ResourceType:
             if aType in requirements:
                 slot = slotsToAssign.pop()
-                slot.setType(aType)
-                values.append(requirements[aType])
+                slot.setTypeAndCount(aType, requirements[aType])
                 
-        self.numsId = self.allNumsTree()[values[0]][values[1]][values[2]][values[3]]
-
-    def allNums(self):
-        return {
-            self.FiveThreeThreeThree, 
-            self.ThreeFiveThreeThree, 
-            self.ThreeThreeFiveThree, 
-            self.ThreeThreeThreeFive,
-            self.TwoOneOneOne,
-            self.OneTwoOneOne,
-            self.OneOneTwoOne,
-            self.OneOneOneTwo,
-            self.OneOneOneOne
-            }
-    
-    def allNumsTree(self):
-        return { 
-                5: {3:{3:{3:self.FiveThreeThreeThree}}}, 
-                3: {3:{3:{5:self.ThreeThreeThreeFive}, 5:{3:self.ThreeThreeFiveThree}}, 5:{3:{3:self.ThreeFiveThreeThree}}}, 
-                2: {1:{1:{1:self.TwoOneOneOne}}},
-                1: {1:{1:{1:self.OneOneOneOne, 2:self.OneOneOneTwo},2: {1:self.OneOneTwoOne}}, 2:{1:{1:self.OneTwoOneOne},},}
-            }
-    
-
+       
     def addToToggler(self, toggler):
-        otherNums = self.allNums()
-        otherNums.remove(self.numsId)
-        toggler.offIds.update(otherNums)
-        toggler.onIds.update([self.TrayId, self.numsId])
         self.slotA.addToToggler(toggler)
         self.slotB.addToToggler(toggler)
         self.slotC.addToToggler(toggler)
@@ -251,37 +192,47 @@ class FourTray:
 
 class TwoTray:
     TrayId = 'g1812'
-    SLOT_A = RequirementsSlot('g1808', 'g6', 'g9', 'g1804', 'g4', 'g3')
-    SLOT_B = RequirementsSlot('g1802', 'g14', 'g16', 'g1798', 'g13', 'g10')
 
-    SevenThree = 'g341'
-    ThreeSeven = 'g339'
-    FiveThree = 'g338'
-    ThreeFive = 'g343'
-    TwoTwo = 'g345'
-    TwoOne = 'g347'
-    OneTwo = 'g349'
+    NUMBERS_A = {
+        7:'text110',
+        6:'text109',
+        5:'text108',
+        4:'text107',
+        3:'text106',
+        2:'text105',
+        1:'text104'
+    }
 
-    def allNums(self):
-        return {
-            self.SevenThree, 
-            self.ThreeSeven, 
-            self.FiveThree, 
-            self.ThreeFive,
-            self.TwoTwo,
-            self.TwoOne,
-            self.OneTwo
-            }
-    
-    def allNumsTree(self):
-        return { 
-                7: {3:self.SevenThree}, 
-                3: {7:self.ThreeSeven, 5:self.ThreeFive}, 
-                5: {3:self.FiveThree},
-                2: {2:self.TwoTwo, 1:self.TwoOne},
-                1: {2:self.OneTwo}
-            }
-    
+    NUMBERS_B = {
+        7:'text93',
+        6:'text92',
+        5:'text91',
+        4:'text90',
+        3:'text89',
+        2:'text88',
+        1:'text87'
+    }
+
+    SLOT_A = RequirementsSlot(
+        id='g1808', 
+        numbers=NUMBERS_A,
+        air_id='g6', 
+        lotus_id='g9', 
+        water_id='g1804', 
+        earth_id='g4', 
+        fire_id='g3'
+    )
+
+    SLOT_B = RequirementsSlot(
+        id='g1802', 
+        numbers=NUMBERS_B,
+        air_id='g14', 
+        lotus_id='g16', 
+        water_id='g1798', 
+        earth_id='g13', 
+        fire_id='g10'
+    )
+
     def __init__(self, requirements) -> None:
         if len(requirements) != 2:
             raise ValueError("Two Tray requirements can only be of length two")
@@ -289,25 +240,16 @@ class TwoTray:
         self.slotA = self.SLOT_A.clone()
         self.slotB = self.SLOT_B.clone()
     
-        value_a = 0
-        value_b = 0    
         for aType in ResourceType:
             if aType in requirements:
                 if self.slotA.onType is None:
-                    self.slotA.setType(aType)
-                    value_a = requirements[aType]
+                    self.slotA.setTypeAndCount(aType, requirements[aType])
                 else:
-                    self.slotB.setType(aType)
-                    value_b = requirements[aType]
-        
-        self.numsId = self.allNumsTree()[value_a][value_b]
+                    self.slotB.setTypeAndCount(aType, requirements[aType])
 
 
     def addToToggler(self, toggler):
-        otherNums = self.allNums()
-        otherNums.remove(self.numsId)
-        toggler.offIds.update(otherNums)
-        toggler.onIds.update([self.TrayId, self.numsId])
+        toggler.onIds.add(self.TrayId)
         self.slotA.addToToggler(toggler)
         self.slotB.addToToggler(toggler)
 
@@ -419,6 +361,41 @@ def generateResourceCad(outputFile, requirements, victorypoints, type, image, in
 
     
     toggler.execute(input_svg, outputFile)
-    print(f'Generated file {outputFile}')
+    logging.info(f'Generated file {outputFile}')
 
 
+
+if __name__ == "__main__":
+    from pathlib import Path
+    level = 1
+    produces = ResourceType.Water
+    image = ''
+    # requirements = {
+    #     ResourceType.Water:5,
+    #     ResourceType.Lotus:5,
+    #     ResourceType.Air:1,
+    #     ResourceType.Fire:2,
+    # }
+
+    requirements = {
+        ResourceType.Air:5,
+    }
+
+    # requirements = {
+    #     ResourceType.Water:5,
+    #     ResourceType.Lotus:5,
+    # }
+
+    # requirements = {
+    #     ResourceType.Lotus:5,
+    #     ResourceType.Air:1,
+    #     ResourceType.Fire:2,
+    # }
+
+    victoryPoints = 3
+    input_svg = r"D:\Dropbox\Eppe's Stuff\Avatar Splenor Assets\Inkscape_SVG\AllCards_v3_Working.svg"
+    outputFolder = 'output\\SVGs'
+    originRow = 1
+
+    outputFile = Path(outputFolder)/f'Level{level}/{produces}_{(originRow%18) + 1}.svg'
+    generateResourceCad(outputFile, requirements, victoryPoints, produces, image, input_svg)
