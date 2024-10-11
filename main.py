@@ -53,7 +53,7 @@ class ResourceCard:
         self.originRow = originRow
 
     def generateSVG(self, outputFolder, input_svg):
-        outputFile = outputFolder/f'Level{self.level}/{self.produces}_{self.originRow}.svg'
+        outputFile = outputFolder/f'Level{self.level}/{self.produces}_{(self.originRow%18) + 1}.svg'
         generateResourceCad(outputFile, self.requirements, self.victoryPoints, self.produces, self.image, input_svg)
         return outputFile
 
@@ -165,9 +165,8 @@ def main(outputFolderPath, resourceCardsCSV, vipCardsCSV, vipTemplateSvg, resour
         svg_to_png(svgPath, outputPath)
         return outputPath
 
-
-    # resourceCardPNGs = map(svgFromTemplateToPng, map(genSVGandPNGFunc(resourceCardTemplateSvg), resourceCards))
-    # logging.info(f'Generated {len(list(resourceCardPNGs))} resource card PNGs')
+    resourceCardPNGs = map(svgFromTemplateToPng, map(genSVGandPNGFunc(resourceCardTemplateSvg), resourceCards))
+    logging.info(f'Generated {len(list(resourceCardPNGs))} resource card PNGs')
 
     vipCardPNGs = map(svgFromTemplateToPng, map(genSVGandPNGFunc(vipTemplateSvg), vipCards))
     logging.info(f'Generated {len(list(vipCardPNGs))} vip card PNGs')
