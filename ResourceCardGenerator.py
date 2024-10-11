@@ -133,8 +133,8 @@ class FourTray:
         air_id='g24', 
         lotus_id='g26', 
         water_id='g361', 
-        earth_id='g54', 
-        fire_id='g53'
+        earth_id='g22', 
+        fire_id='g20'
     )
     
     SLOT_B = RequirementsSlot(
