@@ -1,5 +1,5 @@
 from toggleSVG import VIPCardRequirement, ResourceType, Toggler
-
+import logging
 
 QuoteIds = [
     "g1277",
@@ -47,7 +47,7 @@ def generateVIPImage(outputFile, types, input_svg, quoteNumber):
     
 
     toggler.execute(input_svg, outputFile)
-    print(f'Generated file {outputFile}')
+    logging.info(f'Generated file {outputFile}')
 
 
 if __name__ == "__main__":
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     input_svg = r"D:\Dropbox\Eppe's Stuff\Avatar Splenor Assets\Inkscape_SVG\Vip Front All.svg"
     generateVIPImage(
         outputFile = output, 
-        types = {ResourceType.Fire:4, ResourceType.Lotus:4, ResourceType.Air:3}, 
+        types = {ResourceType.Fire:4, ResourceType.Lotus:4, ResourceType.Water:3}, 
         input_svg=input_svg, 
         quoteNumber=0)
 

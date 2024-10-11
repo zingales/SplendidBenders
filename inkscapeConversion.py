@@ -21,7 +21,7 @@ else:
 
 def svg_to_png(svg_file, output_file):
     subprocess.run([INKSCAPE_PATH, svg_file, "--export-filename", output_file])
-    print(f'Finished Converting {svg_file} to {output_file}')
+    logging.info(f'Finished Converting {svg_file} to {output_file}')
 
 if __name__ == "__main__":
     oneTrayPath = 'output/OneTray.svg'
