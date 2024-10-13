@@ -126,11 +126,11 @@ class VIPCardRequirement:
 class RequirementsSlot:
 
     TypeToStyleUpdate = {
-        ResourceType.Air: "fill:#f6d7d6;fill-opacity:1",
+        ResourceType.Air: "fill:#fcf3de;fill-opacity:1",
         ResourceType.Lotus: "fill:#fdfbf3;fill-opacity:1",
-        ResourceType.Water: "fill:#d8e2eb;fill-opacity:1",
-        ResourceType.Earth: "fill:#dce8d5;fill-opacity:1",
-        ResourceType.Fire: "fill:#f6d7d6;fill-opacity:1",
+        ResourceType.Water: "fill:#ebecf0;fill-opacity:1",
+        ResourceType.Earth: "fill:#f0f5f0;fill-opacity:1",
+        ResourceType.Fire: "fill:#fceeee;fill-opacity:1",
     }
 
     def __init__(self, id, numbers, air_id, lotus_id, water_id, earth_id, fire_id):
