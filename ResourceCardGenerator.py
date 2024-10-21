@@ -297,11 +297,11 @@ class VictoryPoints:
 
 class Border:
     Borders = {
-        ResourceType.Earth:'g3089',
-        ResourceType.Air:'g2439',
+        ResourceType.Earth:'g3999',
+        ResourceType.Air:'g3605',
         ResourceType.Fire:'g1773',
-        ResourceType.Water:'g1325',
-        ResourceType.Lotus:'g1284',
+        ResourceType.Water:'g3211',
+        ResourceType.Lotus:'g4796',
     }
 
     Backgrounds = {
@@ -393,7 +393,7 @@ if __name__ == "__main__":
     # }
 
     victoryPoints = 3
-    input_svg = r"D:\Dropbox\Eppe's Stuff\Avatar Splenor Assets\Inkscape_SVG\AllCards_v3_Working.svg"
+    input_svg = r"D:\Dropbox\Eppe's Stuff\Avatar Splenor Assets\Inkscape_SVG\AllCards_v4_Working.svg"
     outputFolder = 'output\\SVGs'
     originRow = 1
 
